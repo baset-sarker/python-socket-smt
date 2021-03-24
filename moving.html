@@ -9,7 +9,8 @@
     function init() {
 
       // Connect to Web Socket
-      ws = new WebSocket("ws://localhost:9001/");
+      //ws = new WebSocket("ws://localhost:9001/");
+      ws = new WebSocket("ws://192.168.0.163:9001");
 
       // Set event handlers.
       ws.onopen = function() {
