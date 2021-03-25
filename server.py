@@ -4,12 +4,11 @@ import threading
 
 import json 
 
-
+# send the path data to the client 
+# modify this function
 def send_path_data_to_client(client):
-	for x in range(200):
-		d = {"data_type":"position","x":x+3,"y":x+10}
-		server.send_message(client,json.dumps(d))
-		time.sleep(1)
+	path_locations = [(3,4),(4,5)] # get it from your generated code
+	json_data = {"data_type":"path_data","data":path_locations}
 		
 
 # Called for every client connecting (after handshake)
@@ -37,24 +36,30 @@ def message_received(client, server, message):
 			start_y = message_data['start_point']['y']
 			end_x = message_data['end_point']['x']
 			end_y = message_data['end_point']['y']
-			
 
 			th = threading.Thread(target=send_path_data_to_client(client))
 			th.start()
 			
 		if message_data['data_type'] == "stop":
 			print("stop")
-
+			
 		if message_data['data_type'] == "position":
-			print("position_data:"+str(message_data['x'])+','+str(message_data['x']))
+			print("position data:"+str(message_data['x'])+','+str(message_data['x']))
 			server.send_message_to_all(json.dumps(message_data))
+		
+		if message_data['data_type'] == "path_data":
+			print("position data:"+str(message_data["data"]))
+			server.send_message_to_all(json.dumps(message_data))
+
+		
 
 	except ValueError as e:
 		print("json parse error")
 		return False
 
 PORT=9001
-SERVER = '192.168.0.163'
+#SERVER = '192.168.0.163'
+SERVER ="localhost"
 server = WebsocketServer(PORT,SERVER)
 server.set_fn_new_client(new_client)
 server.set_fn_client_left(client_left)

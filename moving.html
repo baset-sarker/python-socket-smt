@@ -9,8 +9,8 @@
     function init() {
 
       // Connect to Web Socket
-      //ws = new WebSocket("ws://localhost:9001/");
-      ws = new WebSocket("ws://192.168.0.163:9001");
+      ws = new WebSocket("ws://localhost:9001/");
+      //ws = new WebSocket("ws://192.168.0.163:9001");
 
       // Set event handlers.
       ws.onopen = function() {
@@ -21,9 +21,16 @@
         // e.data contains received string.
         output("onmessage: " + e.data);
         var obj = JSON.parse(e.data);
-        console.log(obj);
-        placeDiv(obj.x, obj.y)
-      };
+        if(obj.data_type == "position"){
+            console.log(obj);
+            placeDiv(obj.x, obj.y)
+        }
+
+        if(obj.data_type == "path_data"){
+          console.log("Path Data",obj.data)
+        }
+
+      };// on message
       
       ws.onclose = function() {
         output("onclose");

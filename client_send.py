@@ -8,8 +8,8 @@ import time
 import csv,json
 
 
-#uri = "ws://localhost:9001"
-uri = "ws://192.168.0.163:9001"
+uri = "ws://localhost:9001"
+#uri = "ws://192.168.0.163:9001"
 
 # Function to convert a CSV to JSON
 # Takes the file paths as arguments
@@ -31,7 +31,6 @@ def make_json(csvFilePath):
 
 
 async def send_live_location(x,y):
-
     async with websockets.connect(uri) as websocket:
         json_data = {"data_type":"position","x":x,"y":y}
         json_data = json.dumps(json_data, indent=4)
@@ -42,12 +41,22 @@ async def send_live_location(x,y):
         # greeting = await websocket.recv()
         # print(f"< {greeting}")
 
+
+# data is and array of object [{3,2},{32,32}]
+async def send_path_locations(data=[]):
+    async with websockets.connect(uri) as websocket:
+        json_data = {"data_type":"path_data","data":data}
+        json_data = json.dumps(json_data, indent=4)
+        await websocket.send(json_data)
+        print("Data Sent"+json_data)
+
+
 async def send_data_from_csv(csv_path):
     async with websockets.connect(uri) as websocket:
         #json_data = '{"data_type":"position","x":,"y":"6"}'
 
         data = make_json(csv_path)
-        json_data = {"data_type":"map_path","data":data}
+        json_data = {"data_type":"path_data","data":data}
         json_data = json.dumps(json_data, indent=4)
 
         await websocket.send(json_data)
@@ -60,6 +69,9 @@ async def send_data_from_csv(csv_path):
 x=3
 y=4
 asyncio.get_event_loop().run_until_complete(send_live_location(x,y))
+
+path_locations = [(3,4),(4,5)]
+asyncio.get_event_loop().run_until_complete(send_path_locations(path_locations))
 
 #asyncio.get_event_loop().run_until_complete(send_data_from_csv('csv_file.csv'))
 
